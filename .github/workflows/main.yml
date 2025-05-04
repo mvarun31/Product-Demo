@@ -1,0 +1,41 @@
+name: Publish NPM package to Cloudsmith
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Configure NPM registry for Cloudsmith
+        run: |
+          npm config set registry https://npm.cloudsmith.io/testcheck/product-demo/
+          npm config set https://npm.cloudsmith.io/testcheck/product-demo/:_authToken=${{ secrets.CLOUDSMITH_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Pack the package
+        run: npm pack
+
+      - name: Install Cloudsmith CLI
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip3 install --upgrade cloudsmith-cli
+
+      - name: Push package to Cloudsmith
+        run: |
+          PACKAGE_TGZ=$(ls *.tgz)
+          cloudsmith push npm testcheck/product-demo "$PACKAGE_TGZ"
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_TOKEN }}
