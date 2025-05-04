@@ -22,7 +22,7 @@ jobs:
           npm config set https://npm.cloudsmith.io/testcheck/product-demo/:_authToken=${{ secrets.CLOUDSMITH_TOKEN }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm install express 
 
       - name: Pack the package
         run: npm pack
