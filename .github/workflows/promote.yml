@@ -1,0 +1,52 @@
+name: Tag and Promote Ready-for-Production Packages
+
+on:
+  workflow_dispatch:
+
+env:
+  CLOUDSMITH_NAMESPACE: testcheck
+  CLOUDSMITH_STAGING_REPO: product-demo
+  CLOUDSMITH_PRODUCTION_REPO: product-prod
+
+jobs:
+  tag-and-promote:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies (jq and Cloudsmith CLI)
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip jq
+          pip3 install --upgrade cloudsmith-cli
+
+      - name: List and Promote Ready-for-Production Packages
+        run: |
+          echo "Fetching packages tagged as 'ready-for-production' in staging..."
+
+          PACKAGE_DATA=$(cloudsmith list package \
+            $CLOUDSMITH_NAMESPACE/$CLOUDSMITH_STAGING_REPO \
+            -q "tag:ready-for-production" -F json)
+
+          PACKAGE_IDS=$(echo "$PACKAGE_DATA" | jq -r '.[]?.identifier_perm')
+
+          if [[ -z "$PACKAGE_IDS" ]]; then
+            echo "No packages found with 'ready-for-production' tag. Exiting."
+            exit 0
+          fi
+
+          echo "Packages ready for promotion:"
+          echo "$PACKAGE_IDS"
+
+          for IDENTIFIER in $PACKAGE_IDS; do
+            echo "Promoting package: $IDENTIFIER"
+            cloudsmith mv --yes \
+              "$CLOUDSMITH_NAMESPACE/$CLOUDSMITH_STAGING_REPO/$IDENTIFIER" \
+              "$CLOUDSMITH_NAMESPACE/$CLOUDSMITH_PRODUCTION_REPO"
+          done
+
+          echo "All tagged packages have been promoted successfully."
+        env:
+          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_TOKEN }}
