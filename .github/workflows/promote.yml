@@ -1,4 +1,4 @@
-name: Tag and Promote Ready-for-Production Packages
+name: Promote Ready-for-Production Packages
 
 on:
   workflow_dispatch:
