@@ -44,7 +44,7 @@ jobs:
             echo "Promoting package: $IDENTIFIER"
             cloudsmith mv --yes \
               "$CLOUDSMITH_NAMESPACE/$CLOUDSMITH_STAGING_REPO/$IDENTIFIER" \
-              "$CLOUDSMITH_NAMESPACE/$CLOUDSMITH_PRODUCTION_REPO"
+              "$CLOUDSMITH_PRODUCTION_REPO"
           done
       
           echo "All tagged packages have been promoted successfully."
