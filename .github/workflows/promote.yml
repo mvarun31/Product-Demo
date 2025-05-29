@@ -24,8 +24,8 @@ jobs:
       - name: Install Cloudsmith CLI
         uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
         with:
-          oidc-namespace: testcheck
-          oidc-service-slug: github_action
+          oidc-namespace: "testcheck"
+          oidc-service-slug: "github_action"
 
       - name: List and Promote Ready-for-Production Packages
         run: |
