@@ -20,7 +20,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip jq
-          pip3 install --upgrade cloudsmith-cli
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
+        with:
+          oidc-namespace: testcheck
+          oidc-service-slug: github_action
 
       - name: List and Promote Ready-for-Production Packages
         run: |
@@ -48,6 +53,5 @@ jobs:
           done
       
           echo "All tagged packages have been promoted successfully."
-        env:
-          CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_TOKEN }}
+      
       
