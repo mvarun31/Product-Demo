@@ -6,7 +6,7 @@ on:
 env:
   CLOUDSMITH_NAMESPACE: testcheck
   CLOUDSMITH_STAGING_REPO: product-demo
-  CLOUDSMITH_PRODUCTION_REPO: product-prod
+  CLOUDSMITH_PRODUCTION_REPO: product-production
 
 jobs:
   tag-and-promote:
