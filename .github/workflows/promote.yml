@@ -3,6 +3,10 @@ name: Promote Ready-for-Production Packages
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   CLOUDSMITH_NAMESPACE: testcheck
   CLOUDSMITH_STAGING_REPO: product-demo
@@ -16,15 +20,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies (jq and Cloudsmith CLI)
+      - name: Install dependencies (jq only)
         run: |
           sudo apt update
-          sudo apt install -y python3-pip jq
+          sudo apt install -y jq
 
-      - name: Install Cloudsmith CLI
+      - name: Authenticate with Cloudsmith using OIDC
         uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
         with:
-          oidc-namespace: "testcheck"
+          oidc-namespace: "${{ env.CLOUDSMITH_NAMESPACE }}"
           oidc-service-slug: "github_action"
 
       - name: List and Promote Ready-for-Production Packages
@@ -53,5 +57,3 @@ jobs:
           done
       
           echo "All tagged packages have been promoted successfully."
-      
-      
